@@ -2,9 +2,9 @@
 
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import React, { useState } from "react";
-import { Button } from "./button"; // Assuming Button is a shadcn/ui component
-import { Input } from "./input"; // Assuming Input is a shadcn/ui component
+import React, { useState, useEffect } from "react";
+import { Button } from "./button";
+import { Input } from "./input";
 
 export function PlaceholdersAndVanishInput({
   placeholders,
@@ -17,12 +17,19 @@ export function PlaceholdersAndVanishInput({
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   className?: string;
 }) {
-  const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
+  const [currentPlaceholderIndex, setCurrentPlaceholderIndex] = useState(0);
   const [value, setValue] = useState("");
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentPlaceholderIndex((prev) => (prev + 1) % placeholders.length);
+    }, 3000); // Change placeholder every 3 seconds
+    return () => clearInterval(interval);
+  }, [placeholders.length]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value);
-    onChange(e);
+    onChange(e); // Pass the event up to the parent component
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -34,7 +41,7 @@ export function PlaceholdersAndVanishInput({
   return (
     <form
       className={cn(
-        "relative bg-white/10 dark:bg-black/10 text-white border border-white/20 max-w-md w-full rounded-full flex items-center space-x-2 pr-2", // Updated styling
+        "relative bg-white/10 dark:bg-black/10 text-white border border-white/20 max-w-md w-full rounded-full flex items-center space-x-2 pr-2",
         className
       )}
       onSubmit={handleSubmit}
@@ -43,8 +50,8 @@ export function PlaceholdersAndVanishInput({
         type="text"
         value={value}
         onChange={handleInputChange}
-        placeholder={placeholders[currentPlaceholder]}
-        className="flex-1 rounded-full border-none bg-transparent px-4 py-2 text-white placeholder:text-white/70 focus:outline-none focus:ring-0" // Updated styling
+        // Removed placeholder prop from Input, motion.p will handle it
+        className="flex-1 rounded-full border-none bg-transparent px-4 py-2 text-white placeholder:text-white/70 focus:outline-none focus:ring-0"
       />
       <Button
         type="submit"
@@ -77,17 +84,17 @@ export function PlaceholdersAndVanishInput({
         </motion.span>
       </Button>
 
-      <div className="absolute inset-0 flex items-center rounded-full pointer-events-none">
+      {value === "" && ( // Conditionally render motion.p only when input is empty
         <motion.p
           initial={{ y: 5, opacity: 0 }}
-          key={placeholders[currentPlaceholder]}
+          key={placeholders[currentPlaceholderIndex]} // Use index for key to re-trigger animation
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, ease: "easeInOut" }}
           className="text-sm text-white/70 absolute left-4 z-10"
         >
-          {placeholders[currentPlaceholder]}
+          {placeholders[currentPlaceholderIndex]}
         </motion.p>
-      </div>
+      )}
     </form>
   );
 }
