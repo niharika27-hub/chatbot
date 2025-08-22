@@ -1,7 +1,7 @@
 "use client";
 
-import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
-import React from "react";
+import React from "react"; // Keep React import for consistency
+import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input"; // Use alias for import path
 
 export function PlaceholdersAndVanishInputDemo() {
   const placeholders = [
@@ -20,8 +20,8 @@ export function PlaceholdersAndVanishInputDemo() {
     console.log("submitted");
   };
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center px-4 py-8"> {/* Adjusted height and added vertical padding */}
-      <h2 className="mb-10 sm:mb-20 text-xl sm:text-3xl md:text-5xl text-center dark:text-white text-black"> {/* Responsive font sizes */}
+    <div className="h-[40rem] flex flex-col justify-center  items-center px-4">
+      <h2 className="mb-10 sm:mb-20 text-xl text-center sm:text-5xl dark:text-white text-black">
         Ask Aceternity UI Anything
       </h2>
       <PlaceholdersAndVanishInput
