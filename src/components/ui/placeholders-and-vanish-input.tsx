@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
 
 export function PlaceholdersAndVanishInput({
@@ -14,34 +14,43 @@ export function PlaceholdersAndVanishInput({
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
 }) {
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
-  const [inputValue, setInputValue] = useState("");
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentPlaceholder((prev) => (prev + 1) % placeholders.length);
-    }, 3000); // Cycle every 3 seconds
+    }, 3000); // Change placeholder every 3 seconds
     return () => clearInterval(interval);
   }, [placeholders.length]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value);
-    onChange(e);
+  const variants = {
+    initial: {
+      y: 0,
+      opacity: 0,
+    },
+    animate: {
+      y: -10,
+      opacity: 1,
+    },
+    vanish: {
+      y: -20,
+      opacity: 0,
+    },
   };
 
   return (
     <form
       onSubmit={onSubmit}
-      className="relative w-full max-w-xl mx-auto bg-white dark:bg-zinc-800 h-12 rounded-full overflow-hidden shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] transition-all duration-500"
+      className="relative w-full max-w-xl mx-auto bg-white dark:bg-zinc-800 h-12 rounded-full flex space-x-2 items-center shadow-lg border border-neutral-200 dark:border-neutral-700"
     >
       <input
         type="text"
-        value={inputValue}
-        onChange={handleInputChange}
-        className="w-full h-full pl-4 pr-12 rounded-full bg-transparent text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+        onChange={onChange}
+        placeholder=" " // Keep placeholder empty to let the animated one show
+        className="flex-1 h-full outline-none border-0 bg-transparent text-zinc-900 dark:text-zinc-100 pl-4 pr-10 placeholder:text-neutral-400 dark:placeholder:text-neutral-600 focus:ring-0"
       />
       <button
         type="submit"
-        className="absolute right-2 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-blue-500 flex items-center justify-center text-white"
+        className="relative h-8 w-8 rounded-full flex items-center justify-center bg-blue-600 text-white mr-2 transition-all duration-300 hover:scale-105"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -49,30 +58,31 @@ export function PlaceholdersAndVanishInput({
           viewBox="0 0 24 24"
           strokeWidth="1.5"
           stroke="currentColor"
-          className="w-5 h-5"
+          className="h-4 w-4"
         >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
-            d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"
+            d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75"
           />
         </svg>
       </button>
 
-      <AnimatePresence mode="wait">
-        {inputValue === "" && (
+      <div className="absolute inset-0 flex items-center rounded-full pointer-events-none">
+        <AnimatePresence mode="wait">
           <motion.p
+            initial="initial"
+            animate="animate"
+            exit="vanish"
+            variants={variants}
             key={placeholders[currentPlaceholder]}
-            initial={{ y: 5, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -15, opacity: 0 }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-sm text-white pointer-events-none"
+            className="text-sm text-white dark:text-white absolute left-4 top-1/2 -translate-y-1/2" // Changed text color to white
+            transition={{ duration: 1.5, ease: "easeInOut" }} // Increased duration to 1.5 seconds
           >
             {placeholders[currentPlaceholder]}
           </motion.p>
-        )}
-      </AnimatePresence>
+        </AnimatePresence>
+      </div>
     </form>
   );
 }
