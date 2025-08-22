@@ -1,36 +1,140 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+---
+
+# Chitkara University Assistant
+
+Your intelligent gateway for everything Chitkara — from admissions and courses to campus life.
+
+---
+
+## Features
+
+* **Instant Q&A**  
+  Get real-time answers to your queries about admissions, programs, campus facilities, university life, and more.
+
+* **Clean, Conversational UI**  
+  A friendly, minimalist design that encourages seamless interaction and quick results.
+
+* **Powered by AI (Next.js + Vercel AI SDK)**  
+  Built on a solid foundation that enables efficient and scalable AI-driven responses.
+
+---
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+* Node.js (v16 or higher recommended)
+* A Vercel account (for deployment)
+* API credentials (e.g., OpenAI key and/or other model provider credentials)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Setup (Local Development)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **Clone the repository**
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+   ```bash
+   git clone <your-repo-url>
+   cd <repo-directory>
+   ```
 
-## Learn More
+2. **Copy and configure environment variables**
 
-To learn more about Next.js, take a look at the following resources:
+   ```bash
+   cp .env.example .env.local
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+   Populate the `.env.local` file with required credentials (OpenAI key, Vercel KV, etc.). Do **not** commit your `.env.local`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. **Install dependencies and run locally**
 
-## Deploy on Vercel
+   ```bash
+   npm install
+   npm run dev
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+   The app should be accessible at `http://localhost:3000`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Deployment to Vercel
+
+1. Sign in to Vercel and link your local project:
+
+   ```bash
+   npm i -g vercel
+   vercel link
+   ```
+
+2. Pull environment variables from Vercel (if set up):
+
+   ```bash
+   vercel env pull
+   ```
+
+3. Deploy:
+
+   ```bash
+   vercel
+   ```
+
+---
+
+## How It Works
+
+* **Next.js with Vercel AI SDK**  
+  Leverages Next.js App Router, React Server Components, and Server Actions for smooth and dynamic UI/UX. ([GitHub][1])
+
+* **Model Provider Flexibility**  
+  Uses OpenAI's `gpt-3.5-turbo` by default (or `gpt-4o` in some templates). Easily switch to Anthropic, Cohere, Hugging Face, LangChain, etc., with minimal configuration. ([GitHub][1])
+
+* **State Management**  
+  Utilizes Vercel KV (or Vercel Postgres & Blob in some variants) for storing session data and chat history. ([GitHub][1])
+
+* **Tailwind UI Components**  
+  Styled with Tailwind CSS and built with Radix UI headless components (via shadcn/ui) for consistent, accessible, and flexible UI. ([GitHub][1])
+
+---
+
+## Usage
+
+1. Visit the deployed site (e.g., `https://chitkarabot.vercel.app/`).
+2. Start chatting—ask questions about admissions, programs, campus events, or anything related to Chitkara University.
+3. The AI responds conversationally, providing helpful and fast answers.
+
+---
+
+## Customization Ideas
+
+* **Tailor Knowledge Base**  
+  Plug in admission FAQs, program overviews, department info, and campus highlights to enrich responses.
+
+* **Add Multilingual Support**  
+  Enable support for multiple languages to serve international students.
+
+* **Integrate University Tools**  
+  Link with systems like LMS, timetables, contact directories, or event calendars for deeper utility.
+
+* **Enable Advanced Tools**  
+  Add functionalities like document uploads, image-based responses, or live notifications using tool integrations.
+
+---
+
+## Contributing
+
+Contributions are always welcome! If you'd like to help refine, expand or improve the chatbot:
+
+1. Fork the repo  
+2. Create a feature branch: `git checkout -b feature-xyz`  
+3. Make your changes  
+4. Submit a pull request describing your changes
+
+---
+
+## License
+
+[Insert your chosen license—MIT, Apache 2.0, or any other] — feel free to customize.
+
+---
+
+## Acknowledgments
+
+This project was inspired by Next.js AI chatbot templates using the Vercel AI SDK, such as the ones created by Vercel’s team. They offer features like streaming chat, flexible model providers, Tailwind-based UI, and KV-backed chat history. ([GitHub][1])
+
+---
