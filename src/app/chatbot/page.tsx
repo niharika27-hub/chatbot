@@ -3,8 +3,8 @@
 import React, { useState } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
-import { Loader } from '@/components/ui/loader';
-import { ChatInput } from '@/components/chat-input'; // Import the new ChatInput component
+import { PlaceholdersAndVanishInput } from '@/components/ui/placeholders-and-vanish-input';
+import { Loader } from '@/components/ui/loader'; // Import the new Loader component
 
 interface Message {
   id: string;
@@ -13,9 +13,21 @@ interface Message {
 }
 
 export default function ChatbotPage() {
-  const [messages, setMessages] = useState<Message[]>([]); // Start with an empty array for messages
+  const [messages, setMessages] = useState<Message[]>([
+    { id: crypto.randomUUID(), text: "Welcome to Chitkara University! Ask me about admissions, courses, placements, campus life, transport, clubs, or more.", sender: 'bot' },
+  ]);
   const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // New state for loading indicator
+
+  const placeholders = [
+    "Ask about admissions...",
+    "What courses are offered?",
+    "Tell me about campus life.",
+    "Where can I find information on placements?",
+    "What are the transport options?",
+    "Are there any student clubs?",
+    "How do I apply for a hostel?",
+  ];
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);
@@ -28,7 +40,7 @@ export default function ChatbotPage() {
       const updatedMessages = [...messages, newUserMessage];
       setMessages(updatedMessages);
       setInput('');
-      setIsLoading(true);
+      setIsLoading(true); // Set loading to true when sending message
 
       try {
         const response = await fetch('/api/chat', {
@@ -46,56 +58,50 @@ export default function ChatbotPage() {
         const errorMessage: Message = { id: crypto.randomUUID(), text: "Sorry, I'm having trouble connecting right now. Please try again later.", sender: 'bot' };
         setMessages((prevMessages) => [...prevMessages, errorMessage]);
       } finally {
-        setIsLoading(false);
+        setIsLoading(false); // Set loading to false after response or error
       }
     }
   };
 
   return (
-    <div className="flex flex-col h-screen bg-[#121212] text-white font-sans">
-      {messages.length === 0 ? (
-        <div className="flex flex-col items-center justify-center flex-1 mt-[20vh]">
-          <p className="text-2xl font-medium text-center text-white">
-            What's on your mind today?
-          </p>
-        </div>
-      ) : (
-        <ScrollArea className="flex-1 p-4 space-y-4">
-          {messages.map((message) => (
+    <div className="flex flex-col h-screen bg-background text-foreground">
+      <header className="bg-primary text-primary-foreground p-4 text-center text-xl font-bold">
+        Chitkara University Assistant
+      </header>
+      <ScrollArea className="flex-1 p-4 space-y-4">
+        {messages.map((message) => (
+          <div
+            key={message.id}
+            className={cn(
+              "flex",
+              message.sender === 'user' ? "justify-end" : "justify-start"
+            )}
+          >
             <div
-              key={message.id}
               className={cn(
-                "flex",
-                message.sender === 'user' ? "justify-end" : "justify-start"
+                "max-w-[70%] p-3 rounded-lg",
+                message.sender === 'user'
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground"
               )}
             >
-              <div
-                className={cn(
-                  "max-w-[70%] p-3 rounded-lg",
-                  message.sender === 'user'
-                    ? "bg-blue-600 text-white" // Using a blue for user messages for contrast
-                    : "bg-[#1e1e1e] text-white"
-                )}
-              >
-                {message.text}
-              </div>
+              {message.text}
             </div>
-          ))}
-          {isLoading && (
-            <div className="flex justify-start mt-4">
-              <div className="bg-[#1e1e1e] text-white p-3 rounded-lg max-w-[70%]">
-                <Loader className="h-6 w-6" />
-              </div>
+          </div>
+        ))}
+        {isLoading && ( // Display loader when isLoading is true
+          <div className="flex justify-start mt-4">
+            <div className="bg-muted text-muted-foreground p-3 rounded-lg max-w-[70%]">
+              <Loader className="h-6 w-6" /> {/* Adjust size as needed */}
             </div>
-          )}
-        </ScrollArea>
-      )}
-      <div className="flex p-4 border-t border-[#333333] bg-[#121212] justify-center">
-        <ChatInput
-          value={input}
+          </div>
+        )}
+      </ScrollArea>
+      <div className="flex p-4 border-t border-border bg-card justify-center">
+        <PlaceholdersAndVanishInput
+          placeholders={placeholders}
           onChange={handleInputChange}
           onSubmit={handleSendMessage}
-          isLoading={isLoading}
         />
       </div>
     </div>
