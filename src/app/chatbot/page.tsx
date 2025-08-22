@@ -22,7 +22,8 @@ export default function ChatbotPage() {
   const handleSendMessage = async () => {
     if (input.trim()) {
       const newUserMessage: Message = { id: Date.now().toString(), text: input, sender: 'user' };
-      setMessages((prevMessages) => [...prevMessages, newUserMessage]);
+      const updatedMessages = [...messages, newUserMessage];
+      setMessages(updatedMessages);
       setInput('');
 
       // Simulate API call
@@ -32,7 +33,7 @@ export default function ChatbotPage() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ message: input, sessionId: 'user-session-id' }), // Placeholder session ID
+          body: JSON.stringify({ messages: updatedMessages, sessionId: 'user-session-id' }), // Send all messages for context
         });
         const data = await response.json();
         const botResponse: Message = { id: Date.now().toString() + '-bot', text: data.response, sender: 'bot' };
