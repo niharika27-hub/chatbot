@@ -50,7 +50,7 @@ export function PlaceholdersAndVanishInput({
       />
       <button
         type="submit"
-        className="relative h-8 w-8 rounded-full flex items-center justify-center bg-blue-600 text-white mr-2 transition-all duration-300 hover:scale-105"
+        className="relative h-8 w-8 rounded-full flex items-center justify-center bg-blue-600 text-white mr-3 transition-all duration-300 hover:scale-105"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -76,8 +76,8 @@ export function PlaceholdersAndVanishInput({
             exit="vanish"
             variants={variants}
             key={placeholders[currentPlaceholder]}
-            className="text-sm text-white dark:text-white absolute left-4 top-1/2 -translate-y-1/2" // Changed text color to white
-            transition={{ duration: 1.5, ease: "easeInOut" }} // Increased duration to 1.5 seconds
+            className="text-sm text-white dark:text-white absolute left-4 top-1/2 -translate-y-1/2"
+            transition={{ duration: 1.5, ease: "easeInOut" }}
           >
             {placeholders[currentPlaceholder]}
           </motion.p>
