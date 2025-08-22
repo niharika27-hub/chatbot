@@ -12,7 +12,8 @@ serve(async (req: Request) => {
   }
 
   try {
-    const { messages, contextData }: { messages: { text: string; sender: 'user' | 'bot' }[]; contextData: Record<string, any>[] } = await req.json();
+    // Update the type definition for contextData to match the new structure
+    const { messages, contextData }: { messages: { text: string; sender: 'user' | 'bot' }[]; contextData: { filename: string; content: string }[] } = await req.json();
 
     if (!messages || messages.length === 0) {
       return new Response(JSON.stringify({ error: "No messages provided." }), {
@@ -22,8 +23,7 @@ serve(async (req: Request) => {
     }
 
     const systemPrompt = `Act as an expert virtual assistant for Chitkara University, Punjab.
-    Your primary goal is to provide accurate and helpful information based *only* on the structured data provided in the 'Context Data' section below.
-    The 'Context Data' is retrieved using a semantic search based on the user's query, and it might contain information from various university resources like FAQs, courses, contacts, blocks, hostels, sports, transport, clubs, events, and calendar.
+    Your primary goal is to provide accurate and helpful information based *only* on the 'Context Data' section below, which is provided directly from local text files.
 
     If the answer is not found within the provided context, politely state that you don't have that specific information and suggest contacting the relevant university department (if a contact is available in the context).
 
@@ -44,9 +44,10 @@ serve(async (req: Request) => {
       parts: [{ text: msg.text }],
     }));
 
-    // Append context data to the system prompt for Gemini
+    // Modify how contextString is built to iterate through the array of file contents
     const contextString = contextData.length > 0
-      ? "\n\nContext Data (JSON):\n" + JSON.stringify(contextData, null, 2)
+      ? "\n\nContext Data (from local files):\n" +
+        contextData.map(item => `--- ${item.filename} ---\n${item.content}`).join('\n\n')
       : "\n\nNo specific context data found for this query.";
 
     const geminiMessages = [
