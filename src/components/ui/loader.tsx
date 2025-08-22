@@ -1,37 +1,62 @@
 "use client";
 import React from "react";
-import { motion } from "framer-motion";
+import { motion, Transition } from "framer-motion"; // Import Transition for explicit typing
 import { cn } from "@/lib/utils";
 
-export const LoaderOne = ({ className }: { className?: string }) => {
+const loadingContainerVariants = {
+  start: {
+    transition: {
+      staggerChildren: 0.2,
+    },
+  },
+  end: {
+    transition: {
+      staggerChildren: 0.2,
+    },
+  },
+};
+
+const loadingCircleVariants = {
+  start: {
+    y: "0%",
+  },
+  end: {
+    y: "100%",
+  },
+};
+
+const loadingCircleTransition: Transition = {
+  duration: 0.4,
+  repeat: Infinity,
+  repeatType: "reverse",
+  ease: [0.42, 0, 0.58, 1], // Changed from "easeInOut" to cubic-bezier array to satisfy TypeScript
+};
+
+export const Loader = ({ className }: { className?: string }) => {
   return (
     <div className={cn("flex justify-center items-center h-full", className)}>
       <motion.div
-        initial={{
-          scale: 0,
-        }}
-        animate={{
-          scale: 1,
-        }}
-        transition={{
-          duration: 0.2,
-          type: "spring",
-          stiffness: 100,
-          damping: 10,
-        }}
-        whileHover={{
-          scale: 1.2,
-          rotate: 10,
-        }}
-        whileTap={{
-          scale: 0.9,
-          rotate: -10,
-        }}
-        className="h-10 w-10 rounded-full border-4 border-t-4 border-gray-200 animate-spin"
-        style={{
-          borderTopColor: "var(--primary)", // Using a CSS variable for primary color
-        }}
-      ></motion.div>
+        className="flex space-x-1"
+        variants={loadingContainerVariants}
+        initial="start"
+        animate="end"
+      >
+        <motion.span
+          className="block w-3 h-3 rounded-full bg-primary"
+          variants={loadingCircleVariants}
+          transition={loadingCircleTransition}
+        />
+        <motion.span
+          className="block w-3 h-3 rounded-full bg-primary"
+          variants={loadingCircleVariants}
+          transition={loadingCircleTransition}
+        />
+        <motion.span
+          className="block w-3 h-3 rounded-full bg-primary"
+          variants={loadingCircleVariants}
+          transition={loadingCircleTransition}
+        />
+      </motion.div>
     </div>
   );
 };

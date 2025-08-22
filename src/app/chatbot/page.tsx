@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { PlaceholdersAndVanishInput } from '@/components/ui/placeholders-and-vanish-input';
-import { LoaderOne } from '@/components/ui/loader'; // Import the new LoaderOne component
+import { Loader } from '@/components/ui/loader'; // Import the new Loader component
 
 interface Message {
   id: string;
@@ -92,7 +92,7 @@ export default function ChatbotPage() {
         {isLoading && ( // Display loader when isLoading is true
           <div className="flex justify-start mt-4">
             <div className="bg-muted text-muted-foreground p-3 rounded-lg max-w-[70%]">
-              <LoaderOne className="h-6 w-6" /> {/* Adjust size as needed */}
+              <Loader className="h-6 w-6" /> {/* Adjust size as needed */}
             </div>
           </div>
         )}
