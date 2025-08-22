@@ -83,8 +83,8 @@ export default function ChatbotPage() {
                 className={cn(
                   "max-w-[70%] p-3 rounded-lg",
                   message.sender === 'user'
-                    ? "bg-blue-600/70 text-white" // Semi-transparent blue for user
-                    : "bg-gray-700/70 text-white" // Semi-transparent dark gray for bot
+                    ? "bg-blue-600/70 text-white"
+                    : "bg-gray-700/70 text-white"
                 )}
               >
                 {message.text}
@@ -99,13 +99,14 @@ export default function ChatbotPage() {
             </div>
           )}
         </ScrollArea>
-        <form onSubmit={handleSendMessage} className="flex p-4 border-t border-white/20 justify-center">
+        {/* Replaced the outer form with a div */}
+        <div className="flex p-4 border-t border-white/20 justify-center">
           <PlaceholdersAndVanishInput
             placeholders={placeholders}
             onChange={handleInputChange}
             onSubmit={handleSendMessage}
           />
-        </form>
+        </div>
       </div>
     </WavyBackground>
   );
