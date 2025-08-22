@@ -4,7 +4,8 @@ import React, { useState } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { PlaceholdersAndVanishInput } from '@/components/ui/placeholders-and-vanish-input';
-import { Loader } from '@/components/ui/loader'; // Import the new Loader component
+import { Loader } from '@/components/ui/loader';
+import { WavyBackground } from '@/components/ui/wavy-background';
 
 interface Message {
   id: string;
@@ -17,7 +18,7 @@ export default function ChatbotPage() {
     { id: crypto.randomUUID(), text: "Welcome to Chitkara University! Ask me about admissions, courses, placements, campus life, transport, clubs, or more.", sender: 'bot' },
   ]);
   const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false); // New state for loading indicator
+  const [isLoading, setIsLoading] = useState(false);
 
   const placeholders = [
     "Ask about admissions...",
@@ -40,7 +41,7 @@ export default function ChatbotPage() {
       const updatedMessages = [...messages, newUserMessage];
       setMessages(updatedMessages);
       setInput('');
-      setIsLoading(true); // Set loading to true when sending message
+      setIsLoading(true);
 
       try {
         const response = await fetch('/api/chat', {
@@ -58,52 +59,55 @@ export default function ChatbotPage() {
         const errorMessage: Message = { id: crypto.randomUUID(), text: "Sorry, I'm having trouble connecting right now. Please try again later.", sender: 'bot' };
         setMessages((prevMessages) => [...prevMessages, errorMessage]);
       } finally {
-        setIsLoading(false); // Set loading to false after response or error
+        setIsLoading(false);
       }
     }
   };
 
   return (
-    <div className="flex flex-col h-screen bg-background text-foreground">
-      <header className="bg-primary text-primary-foreground p-4 text-center text-xl font-bold">
-        Chitkara University Assistant
-      </header>
-      <ScrollArea className="flex-1 p-4 space-y-4">
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            className={cn(
-              "flex",
-              message.sender === 'user' ? "justify-end" : "justify-start"
-            )}
-          >
+    <WavyBackground className="max-w-full mx-auto h-screen flex flex-col items-center justify-center">
+      <div className="relative z-10 flex flex-col h-[90vh] w-full max-w-3xl bg-card/80 backdrop-blur-sm rounded-lg shadow-xl overflow-hidden">
+        <div className="p-4 text-center text-2xl font-bold text-card-foreground border-b border-border">
+          Chitkara University Assistant
+        </div>
+        <ScrollArea className="flex-1 p-4 space-y-4">
+          {messages.map((message) => (
             <div
+              key={message.id}
               className={cn(
-                "max-w-[70%] p-3 rounded-lg",
-                message.sender === 'user'
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground"
+                "flex",
+                message.sender === 'user' ? "justify-end" : "justify-start"
               )}
             >
-              {message.text}
+              <div
+                className={cn(
+                  "max-w-[70%] p-3 rounded-lg",
+                  message.sender === 'user'
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground"
+                )}
+              >
+                {message.text}
+              </div>
             </div>
-          </div>
-        ))}
-        {isLoading && ( // Display loader when isLoading is true
-          <div className="flex justify-start mt-4">
-            <div className="bg-muted text-muted-foreground p-3 rounded-lg max-w-[70%]">
-              <Loader className="h-6 w-6" /> {/* Adjust size as needed */}
+          ))}
+          {isLoading && (
+            <div className="flex justify-start mt-4">
+              <div className="bg-muted text-muted-foreground p-3 rounded-lg max-w-[70%]">
+                <Loader className="h-6 w-6" />
+              </div>
             </div>
-          </div>
-        )}
-      </ScrollArea>
-      <div className="flex p-4 border-t border-border bg-card justify-center">
-        <PlaceholdersAndVanishInput
-          placeholders={placeholders}
-          onChange={handleInputChange}
-          onSubmit={handleSendMessage}
-        />
+          )}
+        </ScrollArea>
+        <form onSubmit={handleSendMessage} className="flex p-4 border-t border-border bg-card/80 justify-center">
+          <PlaceholdersAndVanishInput
+            placeholders={placeholders}
+            onChange={handleInputChange}
+            onSubmit={handleSendMessage}
+            // Removed value={input} as it's not a valid prop for this component
+          />
+        </form>
       </div>
-    </div>
+    </WavyBackground>
   );
 }
