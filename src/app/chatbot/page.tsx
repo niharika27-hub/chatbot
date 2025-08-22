@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
-import { PlaceholdersAndVanishInput } from '@/components/ui/placeholders-and-vanish-input'; // Import the new component
+import { PlaceholdersAndVanishInput } from '@/components/ui/placeholders-and-vanish-input';
+import { LoaderOne } from '@/components/ui/loader'; // Import the new LoaderOne component
 
 interface Message {
   id: string;
@@ -16,6 +17,7 @@ export default function ChatbotPage() {
     { id: crypto.randomUUID(), text: "Welcome to Chitkara University! Ask me about admissions, courses, placements, campus life, transport, clubs, or more.", sender: 'bot' },
   ]);
   const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false); // New state for loading indicator
 
   const placeholders = [
     "Ask about admissions...",
@@ -32,21 +34,21 @@ export default function ChatbotPage() {
   };
 
   const handleSendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); // Prevent default form submission
+    e.preventDefault();
     if (input.trim()) {
       const newUserMessage: Message = { id: crypto.randomUUID(), text: input, sender: 'user' };
       const updatedMessages = [...messages, newUserMessage];
       setMessages(updatedMessages);
-      setInput(''); // Clear input immediately
+      setInput('');
+      setIsLoading(true); // Set loading to true when sending message
 
-      // Simulate API call
       try {
         const response = await fetch('/api/chat', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ messages: updatedMessages, sessionId: 'user-session-id' }), // Send all messages for context
+          body: JSON.stringify({ messages: updatedMessages, sessionId: 'user-session-id' }),
         });
         const data = await response.json();
         const botResponse: Message = { id: crypto.randomUUID(), text: data.response, sender: 'bot' };
@@ -55,6 +57,8 @@ export default function ChatbotPage() {
         console.error('Error sending message:', error);
         const errorMessage: Message = { id: crypto.randomUUID(), text: "Sorry, I'm having trouble connecting right now. Please try again later.", sender: 'bot' };
         setMessages((prevMessages) => [...prevMessages, errorMessage]);
+      } finally {
+        setIsLoading(false); // Set loading to false after response or error
       }
     }
   };
@@ -85,6 +89,13 @@ export default function ChatbotPage() {
             </div>
           </div>
         ))}
+        {isLoading && ( // Display loader when isLoading is true
+          <div className="flex justify-start mt-4">
+            <div className="bg-muted text-muted-foreground p-3 rounded-lg max-w-[70%]">
+              <LoaderOne className="h-6 w-6" /> {/* Adjust size as needed */}
+            </div>
+          </div>
+        )}
       </ScrollArea>
       <div className="flex p-4 border-t border-border bg-card justify-center">
         <PlaceholdersAndVanishInput
