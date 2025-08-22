@@ -6,6 +6,8 @@ import { cn } from '@/lib/utils';
 import { PlaceholdersAndVanishInput } from '@/components/ui/placeholders-and-vanish-input';
 import { Loader } from '@/components/ui/loader';
 import { WavyBackground } from '@/components/ui/wavy-background';
+import ReactMarkdown from 'react-markdown'; // Import ReactMarkdown
+import remarkGfm from 'remark-gfm'; // Import remarkGfm for GitHub Flavored Markdown
 
 interface Message {
   id: string;
@@ -87,7 +89,27 @@ export default function ChatbotPage() {
                     : "bg-gray-700/70 text-white"
                 )}
               >
-                {message.text}
+                {message.sender === 'bot' ? (
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                      h1: ({ node, ...props }) => <h1 className="text-xl font-bold mt-4 mb-2" {...props} />,
+                      h2: ({ node, ...props }) => <h2 className="text-lg font-semibold mt-3 mb-1" {...props} />,
+                      h3: ({ node, ...props }) => <h3 className="text-base font-semibold mt-2 mb-1" {...props} />,
+                      p: ({ node, ...props }) => <p className="mb-1" {...props} />,
+                      ul: ({ node, ...props }) => <ul className="list-disc list-inside ml-4 mb-1" {...props} />,
+                      ol: ({ node, ...props }) => <ol className="list-decimal list-inside ml-4 mb-1" {...props} />,
+                      li: ({ node, ...props }) => <li className="mb-0.5" {...props} />,
+                      strong: ({ node, ...props }) => <strong className="font-bold" {...props} />,
+                      em: ({ node, ...props }) => <em className="italic" {...props} />,
+                      a: ({ node, ...props }) => <a className="text-blue-300 underline" target="_blank" rel="noopener noreferrer" {...props} />,
+                    }}
+                  >
+                    {message.text}
+                  </ReactMarkdown>
+                ) : (
+                  message.text
+                )}
               </div>
             </div>
           ))}
