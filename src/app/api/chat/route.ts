@@ -14,111 +14,53 @@ export async function POST(req: Request) {
     return NextResponse.json({ response: "No message provided.", sessionId }, { status: 400 });
   }
 
-  const latestUserMessage = messages[messages.length - 1].text.toLowerCase();
+  const latestUserMessage = messages[messages.length - 1].text; // Keep original case for embedding
 
-  // --- Step 1: Dynamically fetch relevant context from Supabase based on the latest user message ---
-  let contextData: Record<string, any>[] = [];
-
-  const keywordsMap = {
-    'faq': ['faqs'],
-    'question': ['faqs'],
-    'answer': ['faqs'],
-    'hostel': ['hostels'],
-    'accommodation': ['hostels'],
-    'room': ['hostels'],
-    'course': ['courses'],
-    'degree': ['courses'],
-    'program': ['courses'],
-    'admission': ['courses', 'contacts', 'faqs', 'calendar'],
-    'contact': ['contacts'],
-    'phone': ['contacts'],
-    'email': ['contacts'],
-    'department': ['contacts', 'blocks'],
-    'block': ['blocks'],
-    'building': ['blocks'],
-    'lab': ['blocks'],
-    'library': ['blocks', 'faqs'],
-    'sport': ['sports'],
-    'game': ['sports'],
-    'facility': ['sports', 'hostels', 'blocks'],
-    'transport': ['transport'],
-    'bus': ['transport'],
-    'route': ['transport'],
-    'club': ['clubs'],
-    'society': ['clubs'],
-    'event': ['events', 'calendar'],
-    'date': ['events', 'calendar'],
-    'schedule': ['calendar'],
-    'placement': ['faqs'], // Placements are often covered in FAQs
-    'fee': ['courses', 'hostels', 'faqs'],
-  };
-
-  const tablesToQuery = new Set<string>();
-  for (const keyword in keywordsMap) {
-    if (latestUserMessage.includes(keyword)) {
-      keywordsMap[keyword as keyof typeof keywordsMap].forEach(table => tablesToQuery.add(table));
-    }
-  }
-
-  // If no specific keywords, default to FAQs or a general search
-  if (tablesToQuery.size === 0) {
-    tablesToQuery.add('faqs');
-    tablesToQuery.add('courses'); // Add courses as a common default
-  }
-
+  // --- Step 1: Generate embedding for the user's query ---
+  let queryEmbedding: number[] | null = null;
   try {
-    for (const table of Array.from(tablesToQuery)) {
-      let query;
-      switch (table) {
-        case 'faqs':
-          query = supabase.from('faqs').select('question, answer, tags').ilike('question', `%${latestUserMessage.split(' ')[0]}%`).limit(3);
-          break;
-        case 'courses':
-          query = supabase.from('courses').select('name, degree, dept, fee, duration, eligibility').ilike('name', `%${latestUserMessage.split(' ')[0]}%`).limit(3);
-          break;
-        case 'contacts':
-          query = supabase.from('contacts').select('name, department, phone, email, role').ilike('name', `%${latestUserMessage.split(' ')[0]}%`).limit(3);
-          break;
-        case 'blocks':
-          query = supabase.from('blocks').select('name, description, departments, labs, features').ilike('name', `%${latestUserMessage.split(' ')[0]}%`).limit(3);
-          break;
-        case 'hostels':
-          query = supabase.from('hostels').select('name, gender, beds, fee, amenities, description').ilike('name', `%${latestUserMessage.split(' ')[0]}%`).limit(3);
-          break;
-        case 'sports':
-          query = supabase.from('sports').select('name, type, facilities, events, description').ilike('name', `%${latestUserMessage.split(' ')[0]}%`).limit(3);
-          break;
-        case 'transport':
-          query = supabase.from('transport').select('route, stops, timings, notes').ilike('route', `%${latestUserMessage.split(' ')[0]}%`).limit(3);
-          break;
-        case 'clubs':
-          query = supabase.from('clubs').select('name, type, activities, contact_email').ilike('name', `%${latestUserMessage.split(' ')[0]}%`).limit(3);
-          break;
-        case 'events':
-          query = supabase.from('events').select('name, date, description, club_id').ilike('name', `%${latestUserMessage.split(' ')[0]}%`).limit(3);
-          break;
-        case 'calendar':
-          query = supabase.from('calendar').select('event_name, start_date, end_date, type, description').ilike('event_name', `%${latestUserMessage.split(' ')[0]}%`).limit(3);
-          break;
-        default:
-          query = null;
-      }
+    const { data, error } = await supabase.functions.invoke('generate-embedding', {
+      body: { text: latestUserMessage },
+    });
 
-      if (query) {
-        const { data, error } = await query;
-        if (error) {
-          console.error(`Supabase ${table} error:`, error);
-        }
-        if (data && data.length > 0) {
-          contextData.push({ [table]: data });
-        }
-      }
+    if (error) {
+      console.error('Error generating query embedding:', error);
+      return NextResponse.json({ response: "Sorry, I'm having trouble understanding your query. Please try again.", sessionId }, { status: 500 });
     }
+    queryEmbedding = data.embedding;
   } catch (error) {
-    console.error('Error fetching Supabase context:', error);
+    console.error('Unexpected error during embedding generation:', error);
+    return NextResponse.json({ response: "An unexpected error occurred while processing your query. Please try again.", sessionId }, { status: 500 });
   }
 
-  // --- Step 2: Invoke the Gemini Edge Function ---
+  // --- Step 2: Perform vector similarity search in the 'documents' table ---
+  let contextData: Record<string, any>[] = [];
+  if (queryEmbedding) {
+    try {
+      const { data: documents, error: searchError } = await supabase
+        .from('documents')
+        .select('content, source_table, source_id')
+        .order(`embedding <-> '${JSON.stringify(queryEmbedding)}'::vector`, { ascending: true }) // Fixed: Embed queryEmbedding directly into the string
+        .limit(5); // Retrieve top 5 most similar documents
+
+      if (searchError) {
+        console.error('Supabase vector search error:', searchError);
+      }
+
+      if (documents && documents.length > 0) {
+        // Format the retrieved documents into contextData
+        contextData = documents.map(doc => ({
+          content: doc.content,
+          source_table: doc.source_table,
+          source_id: doc.source_id,
+        }));
+      }
+    } catch (error) {
+      console.error('Error performing vector search:', error);
+    }
+  }
+
+  // --- Step 3: Invoke the Gemini Edge Function with the retrieved context ---
   try {
     const { data, error } = await supabase.functions.invoke('gemini-chat', {
       body: { messages, contextData },
