@@ -67,7 +67,7 @@ export default function ChatbotPage() {
   return (
     <WavyBackground className="max-w-full mx-auto h-screen flex flex-col items-center justify-center">
       <div className="relative z-10 flex flex-col h-[90vh] w-full max-w-3xl bg-black/20 backdrop-blur-sm rounded-lg shadow-xl overflow-hidden">
-        <div className="p-4 text-center text-2xl font-bold text-white border-b border-white/20">
+        <div className="p-4 text-center text-xl sm:text-2xl font-bold text-white border-b border-white/20">
           Chitkara University Assistant
         </div>
         <ScrollArea className="flex-1 p-4 space-y-4">
@@ -99,7 +99,6 @@ export default function ChatbotPage() {
             </div>
           )}
         </ScrollArea>
-        {/* Replaced the outer form with a div */}
         <div className="flex p-4 border-t border-white/20 justify-center">
           <PlaceholdersAndVanishInput
             placeholders={placeholders}

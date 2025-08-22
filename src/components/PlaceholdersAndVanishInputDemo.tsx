@@ -20,8 +20,8 @@ export function PlaceholdersAndVanishInputDemo() {
     console.log("submitted");
   };
   return (
-    <div className="h-[40rem] flex flex-col justify-center  items-center px-4">
-      <h2 className="mb-10 sm:mb-20 text-xl text-center sm:text-5xl dark:text-white text-black">
+    <div className="min-h-screen flex flex-col justify-center items-center px-4 py-8"> {/* Adjusted height and added vertical padding */}
+      <h2 className="mb-10 sm:mb-20 text-xl sm:text-3xl md:text-5xl text-center dark:text-white text-black"> {/* Responsive font sizes */}
         Ask Aceternity UI Anything
       </h2>
       <PlaceholdersAndVanishInput
