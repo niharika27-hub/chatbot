@@ -15,13 +15,13 @@ interface Message {
 
 export default function ChatbotPage() {
   const [messages, setMessages] = useState<Message[]>([
-    { id: '1', text: "Welcome to Chitkara University! Ask me about admissions, courses, placements, campus life, transport, clubs, or more.", sender: 'bot' },
+    { id: crypto.randomUUID(), text: "Welcome to Chitkara University! Ask me about admissions, courses, placements, campus life, transport, clubs, or more.", sender: 'bot' },
   ]);
   const [input, setInput] = useState('');
 
   const handleSendMessage = async () => {
     if (input.trim()) {
-      const newUserMessage: Message = { id: Date.now().toString(), text: input, sender: 'user' };
+      const newUserMessage: Message = { id: crypto.randomUUID(), text: input, sender: 'user' };
       const updatedMessages = [...messages, newUserMessage];
       setMessages(updatedMessages);
       setInput('');
@@ -36,11 +36,11 @@ export default function ChatbotPage() {
           body: JSON.stringify({ messages: updatedMessages, sessionId: 'user-session-id' }), // Send all messages for context
         });
         const data = await response.json();
-        const botResponse: Message = { id: Date.now().toString() + '-bot', text: data.response, sender: 'bot' };
+        const botResponse: Message = { id: crypto.randomUUID(), text: data.response, sender: 'bot' };
         setMessages((prevMessages) => [...prevMessages, botResponse]);
       } catch (error) {
         console.error('Error sending message:', error);
-        const errorMessage: Message = { id: Date.now().toString() + '-error', text: "Sorry, I'm having trouble connecting right now. Please try again later.", sender: 'bot' };
+        const errorMessage: Message = { id: crypto.randomUUID(), text: "Sorry, I'm having trouble connecting right now. Please try again later.", sender: 'bot' };
         setMessages((prevMessages) => [...prevMessages, errorMessage]);
       }
     }
