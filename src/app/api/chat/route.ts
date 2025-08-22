@@ -40,7 +40,7 @@ export async function POST(req: Request) {
       const { data: documents, error: searchError } = await supabase
         .from('documents')
         .select('content, source_table, source_id')
-        .order(`embedding <-> '${JSON.stringify(queryEmbedding)}'::vector`, { ascending: true }) // Fixed: Embed queryEmbedding directly into the string
+        .order(`embedding <-> '${JSON.stringify(queryEmbedding)}'::vector`, { ascending: true })
         .limit(5); // Retrieve top 5 most similar documents
 
       if (searchError) {
@@ -59,6 +59,9 @@ export async function POST(req: Request) {
       console.error('Error performing vector search:', error);
     }
   }
+
+  // Log the context data to see what's being sent to Gemini
+  console.log('Context Data sent to Gemini:', contextData);
 
   // --- Step 3: Invoke the Gemini Edge Function with the retrieved context ---
   try {
