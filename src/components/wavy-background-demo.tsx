@@ -1,13 +1,23 @@
 "use client";
 import React from "react";
 import Link from "next/link";
+import Image from "next/image"; // Import Image component
 import { WavyBackground } from "@/components/ui/wavy-background";
 import { Button } from "@/components/ui/button";
 
 export default function WavyBackgroundDemo() {
   return (
-    <WavyBackground className="max-w-4xl mx-auto pb-20 md:pb-40"> {/* Adjusted padding for mobile */}
-      <div className="flex flex-col items-center justify-center h-full text-center px-4"> {/* Added horizontal padding for content */}
+    <WavyBackground className="max-w-4xl mx-auto pb-20 md:pb-40">
+      <div className="flex flex-col items-center justify-center h-full text-center px-4">
+        {/* Logo added here */}
+        <Image
+          src="/logo_chitkara.png"
+          alt="Chitkara University Logo"
+          width={150} // Base width
+          height={150} // Base height
+          className="mb-6 md:mb-8 w-24 h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 object-contain" // Responsive sizing
+          priority // Prioritize loading for LCP
+        />
         <p className="text-2xl md:text-4xl lg:text-7xl text-white font-bold inter-var mb-4">
           Your Chitkara University Assistant
         </p>
