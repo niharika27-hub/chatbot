@@ -31,13 +31,13 @@ export function PlaceholdersAndVanishInput({
   return (
     <form
       onSubmit={onSubmit}
-      className="relative w-full max-w-xl mx-auto bg-white dark:bg-zinc-800 h-12 rounded-full overflow-hidden shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] transition-all duration-500"
+      className="relative w-full max-w-xl mx-auto bg-muted h-12 rounded-full overflow-hidden shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] transition-all duration-500"
     >
       <input
         type="text"
         value={inputValue}
         onChange={handleInputChange}
-        className="w-full h-full pl-4 pr-12 rounded-full bg-transparent text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="w-full h-full pl-4 pr-12 rounded-full bg-transparent text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
       <button
         type="submit"
