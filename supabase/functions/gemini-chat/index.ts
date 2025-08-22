@@ -35,6 +35,7 @@ serve(async (req: Request) => {
     - **For sensitive issues (grievances/delays)**, provide official escalation contacts if available.
     - **Use friendly, concise language.**
     - **Structure your answer clearly** using paragraph breaks, bullet points, or simple markdown tables if presenting multiple pieces of information.
+    - **Always use markdown for formatting (e.g., ## for headings, - for bullet points, ** for bold).**
     - **Suggest next steps, links, or contacts** if available and relevant to the answer.
 
     If no answer is found in the provided context for a specific query: "Sorry, I don't have that information. Please contact the relevant university department for more details."`;
