@@ -1,11 +1,9 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Send } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
+import { PlaceholdersAndVanishInput } from '@/components/ui/placeholders-and-vanish-input'; // Import the new component
 
 interface Message {
   id: string;
@@ -19,12 +17,27 @@ export default function ChatbotPage() {
   ]);
   const [input, setInput] = useState('');
 
-  const handleSendMessage = async () => {
+  const placeholders = [
+    "Ask about admissions...",
+    "What courses are offered?",
+    "Tell me about campus life.",
+    "Where can I find information on placements?",
+    "What are the transport options?",
+    "Are there any student clubs?",
+    "How do I apply for a hostel?",
+  ];
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(e.target.value);
+  };
+
+  const handleSendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault(); // Prevent default form submission
     if (input.trim()) {
       const newUserMessage: Message = { id: crypto.randomUUID(), text: input, sender: 'user' };
       const updatedMessages = [...messages, newUserMessage];
       setMessages(updatedMessages);
-      setInput('');
+      setInput(''); // Clear input immediately
 
       // Simulate API call
       try {
@@ -73,22 +86,12 @@ export default function ChatbotPage() {
           </div>
         ))}
       </ScrollArea>
-      <div className="flex p-4 border-t border-border bg-card">
-        <Input
-          placeholder="Type your message..."
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyPress={(e) => {
-            if (e.key === 'Enter') {
-              handleSendMessage();
-            }
-          }}
-          className="flex-1 mr-2"
+      <div className="flex p-4 border-t border-border bg-card justify-center">
+        <PlaceholdersAndVanishInput
+          placeholders={placeholders}
+          onChange={handleInputChange}
+          onSubmit={handleSendMessage}
         />
-        <Button onClick={handleSendMessage}>
-          <Send className="h-5 w-5" />
-          <span className="sr-only">Send</span>
-        </Button>
       </div>
     </div>
   );
