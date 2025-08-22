@@ -66,8 +66,8 @@ export default function ChatbotPage() {
 
   return (
     <WavyBackground className="max-w-full mx-auto h-screen flex flex-col items-center justify-center">
-      <div className="relative z-10 flex flex-col h-[90vh] w-full max-w-3xl bg-card/80 backdrop-blur-sm rounded-lg shadow-xl overflow-hidden">
-        <div className="p-4 text-center text-2xl font-bold text-card-foreground border-b border-border">
+      <div className="relative z-10 flex flex-col h-[90vh] w-full max-w-3xl bg-black/20 backdrop-blur-sm rounded-lg shadow-xl overflow-hidden">
+        <div className="p-4 text-center text-2xl font-bold text-white border-b border-white/20">
           Chitkara University Assistant
         </div>
         <ScrollArea className="flex-1 p-4 space-y-4">
@@ -83,8 +83,8 @@ export default function ChatbotPage() {
                 className={cn(
                   "max-w-[70%] p-3 rounded-lg",
                   message.sender === 'user'
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted text-muted-foreground"
+                    ? "bg-blue-600/70 text-white" // Semi-transparent blue for user
+                    : "bg-gray-700/70 text-white" // Semi-transparent dark gray for bot
                 )}
               >
                 {message.text}
@@ -93,18 +93,17 @@ export default function ChatbotPage() {
           ))}
           {isLoading && (
             <div className="flex justify-start mt-4">
-              <div className="bg-muted text-muted-foreground p-3 rounded-lg max-w-[70%]">
+              <div className="bg-gray-700/70 text-white p-3 rounded-lg max-w-[70%]">
                 <Loader className="h-6 w-6" />
               </div>
             </div>
           )}
         </ScrollArea>
-        <form onSubmit={handleSendMessage} className="flex p-4 border-t border-border bg-card/80 justify-center">
+        <form onSubmit={handleSendMessage} className="flex p-4 border-t border-white/20 justify-center">
           <PlaceholdersAndVanishInput
             placeholders={placeholders}
             onChange={handleInputChange}
             onSubmit={handleSendMessage}
-            // Removed value={input} as it's not a valid prop for this component
           />
         </form>
       </div>
